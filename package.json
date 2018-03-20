@@ -1,0 +1,33 @@
+{
+  "name": "yanma",
+  "version": "1.0.0",
+  "description": "Youtube Music Service",
+  "main": "index.ts",
+  "scripts": {
+    "test": "tslint tslint.json \"./**/*.{ts,tsx}\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://braxtondiggs@github.com/braxtondiggs/Yanma.git"
+  },
+  "author": "Braxton Diggs",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/braxtondiggs/Yanma/issues"
+  },
+  "homepage": "https://github.com/braxtondiggs/Yanma#readme",
+  "devDependencies": {
+    "husky": "^0.14.3",
+    "nodemon": "^1.17.2",
+    "tslint": "^5.9.1"
+  },
+  "dependencies": {
+    "@types/fluent-ffmpeg": "^2.1.6",
+    "@types/lodash": "^4.14.105",
+    "@types/request": "^2.47.0",
+    "fluent-ffmpeg": "^2.1.2",
+    "lodash": "^4.17.5",
+    "request": "^2.85.0",
+    "typescript": "^2.7.2"
+  }
+}
