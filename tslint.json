@@ -9,6 +9,7 @@
     "no-internal-module": true,
     "no-trailing-whitespace": true,
     "no-var-keyword": true,
+    "no-var-requires": false,
     "one-line": [true, "check-catch", "check-finally", "check-else", "check-open-brace", "check-whitespace"],
     "quotemark": [true, "single"],
     "semicolon": [true, "always"],

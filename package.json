@@ -1,10 +1,15 @@
 {
   "name": "yanma",
   "version": "1.0.0",
-  "description": "Youtube Music Service",
+  "description": "Youtube Live Music Service",
   "main": "index.ts",
   "scripts": {
-    "test": "tslint tslint.json \"./**/*.{ts,tsx}\""
+    "start": "node --optimize_for_size --max_old_space_size=460 --gc_interval=100 dist/app.js",
+    "build": "tsc",
+    "serve": "npm run build && npm start",
+    "heroku-postbuild": "tsc",
+    "test": "tslint tslint.json \"./**/*.{ts,tsx}\"",
+    "watch": "nodemon -e ts -w ./src -x npm run serve"
   },
   "repository": {
     "type": "git",
@@ -17,17 +22,23 @@
   },
   "homepage": "https://github.com/braxtondiggs/Yanma#readme",
   "devDependencies": {
-    "husky": "^0.14.3",
-    "nodemon": "^1.17.2",
+    "husky": "^0.15.0-rc.8",
+    "nodemon": "^1.14.12",
     "tslint": "^5.9.1"
   },
   "dependencies": {
     "@types/fluent-ffmpeg": "^2.1.6",
-    "@types/lodash": "^4.14.105",
+    "@types/lodash": "^4.14.106",
     "@types/request": "^2.47.0",
     "fluent-ffmpeg": "^2.1.2",
     "lodash": "^4.17.5",
     "request": "^2.85.0",
-    "typescript": "^2.7.2"
+    "typescript": "^2.8.1",
+    "youtube-api": "^2.0.9"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm test"
+    }
   }
 }
