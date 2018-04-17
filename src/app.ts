@@ -7,7 +7,7 @@ import { IVideo } from './interface';
 class App {
   constructor(
     private ffmpeg: FFMPEG = new FFMPEG(),
-    private server: Server = new Server(),
+    // private server: Server = new Server(),
     private videos: Videos = new Videos(),
     private youtube: Youtube = new Youtube()) {
     Promise.all([
@@ -25,7 +25,7 @@ class App {
         const video: IVideo = this.videos.getNextVideo();
         if (!_.isEmpty(video)) {
           this.ffmpeg.streamVideo(video.id).then((id: string) => {
-            this.videos.removeVideo(id);
+            this.videos.removeVideo(video);
             return callback();
           }).catch(() => {
             // TODO: Handle reject

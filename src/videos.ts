@@ -5,6 +5,7 @@ import * as _ from 'lodash';
 
 export class Videos {
   private videos: IVideo[] = [];
+  private lastVideo: IVideo = {} as IVideo;
   constructor(private youtube: Youtube = new Youtube()) { }
 
   public getNextVideo(): IVideo {
@@ -15,8 +16,17 @@ export class Videos {
     return this.videos;
   }
 
-  public removeVideo(id: string): void {
-    this.videos = _.reject(this.videos, ['id', id]);
+  public removeVideo(video: IVideo): void {
+    this.setLastPlayedVideo(video);
+    this.videos = _.reject(this.videos, ['id', video.id]);
+  }
+
+  public setLastPlayedVideo(video: IVideo): void {
+    this.lastVideo = video;
+  }
+
+  public getLastPlayedVideo(): IVideo {
+    return this.lastVideo;
   }
 
   public addVideo(id?: string): Promise<void> {

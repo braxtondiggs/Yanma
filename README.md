@@ -13,6 +13,6 @@ Youtube Live Jukebox Prototype
 
 1. Run `npm install` to install server dependencies.
 
-2. Run `heroku config:get GOOGLE_API -s >> .env --app yanma`
+2. Run `heroku config:get GOOGLE_API -s >> .env --app yanma && heroku config:get YOUTUBE_LIVE_KEY -s >> .env --app yanma && heroku config:get IMVDB_KEY -s >> .env --app yanma && heroku config:get GIPHY_KEY -s >> .env --app yanma`
 
 3. Run `nf run npm run watch` to start the development server.

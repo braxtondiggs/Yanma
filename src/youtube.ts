@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import { IVideo } from './interface';
+import { IVideo, IYoutube, IYoutubeItems } from './interface';
+
 const YoutubeAPI = require('youtube-api');
 
 export class Youtube {
@@ -16,9 +17,9 @@ export class Youtube {
       YoutubeAPI.videos.list({
         id,
         part: 'contentDetails, snippet'
-      }, (err: object, result: any) => {
+      }, (err: any, result: IYoutube) => {
         if (err) reject(err);
-        const video = _.first(result.items) as any;
+        const video = _.first(result.items) as IYoutubeItems;
         resolve({
           description: video.snippet.description,
           duration: moment.duration(video.contentDetails.duration).asMilliseconds(),
