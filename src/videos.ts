@@ -1,12 +1,16 @@
-import { Youtube } from './';
-import { IVideo } from './interface';
+import { IMVDB, Spotify, Youtube } from './';
+import { ISpotify, ISpotifyArtist, IVideo } from './interface';
 
 import * as _ from 'lodash';
 
 export class Videos {
   private videos: IVideo[] = [];
   private lastVideo: IVideo = {} as IVideo;
-  constructor(private youtube: Youtube = new Youtube()) { }
+  constructor(
+    private imvdb: IMVDB = new IMVDB(),
+    private spotify: Spotify = new Spotify(),
+    private youtube: Youtube = new Youtube()
+  ) { }
 
   public getNextVideo(): IVideo {
     return _.first(this.videos) as IVideo;
@@ -36,8 +40,16 @@ export class Videos {
         return Promise.resolve();
       }, (err) => Promise.reject(err));
     } else {
-      // TODO: Add IMVDB/Youtube service to get content
-      return Promise.resolve();
+      const video: IVideo = this.getLastPlayedVideo();
+      const artist: string = (video.artist && _.isEmpty(video.artist.artists)) ? video.artist.artists[0].name : 'Drake';
+      return this.spotify.getRelatedArtist(artist).then((response: ISpotify) =>
+        response.artists.items
+      ).then((related_artists: ISpotifyArtist[]) => {
+        related_artists = _.shuffle(related_artists);
+        _.forEach(related_artists, (related_artist: ISpotifyArtist) => {
+          return this.imvdb.searchVideos(related_artist.name);
+        });
+      });
     }
   }
 }

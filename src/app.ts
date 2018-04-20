@@ -1,19 +1,16 @@
 'use strict';
 import { whilst } from 'async';
 import * as _ from 'lodash';
-import { FFMPEG, Server, Videos, Youtube } from './';
+import { FFMPEG, Server, Videos } from './';
 import { IVideo } from './interface';
 
 class App {
   constructor(
     private ffmpeg: FFMPEG = new FFMPEG(),
     // private server: Server = new Server(),
-    private videos: Videos = new Videos(),
-    private youtube: Youtube = new Youtube()) {
+    private videos: Videos = new Videos()) {
     Promise.all([
-      this.videos.addVideo('4jT6479VDPI'),
-      this.videos.addVideo('hC2-_L1TomY'),
-      this.videos.addVideo('dT-AVgjAiKs')
+      this.videos.addVideo()
     ]).then(() => {
       this.startVideoService();
     });

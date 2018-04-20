@@ -7,10 +7,10 @@ export class IMVDB {
   }
 
   public searchVideos(query: string): rq.RequestPromise {
-    return rq.get('http://imvdb.com/api/v1/search/videos', { qs: [{ q: query }] });
+    return rq.get('http://imvdb.com/api/v1/search/videos', { qs: [{ q: encodeURI(query) }] });
   }
 
   public searchEntities(query: string): rq.RequestPromise {
-    return rq.get('http://imvdb.com/api/v1/search/entities', { qs: [{ q: query }] });
+    return rq.get('http://imvdb.com/api/v1/search/entities', { qs: [{ q: encodeURI(query) }] });
   }
 }

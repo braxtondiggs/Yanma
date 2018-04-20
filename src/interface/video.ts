@@ -1,3 +1,5 @@
+import { IIMVDBVideo } from './';
+
 export interface IVideo {
   publishedAt: string;
   title: string;
@@ -6,4 +8,5 @@ export interface IVideo {
   id: string;
   image: string;
   url: string;
+  artist?: IIMVDBVideo;
 }

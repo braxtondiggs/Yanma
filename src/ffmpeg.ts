@@ -7,7 +7,6 @@ export class FFMPEG {
     return new Promise((resolve, reject) => {
       const command = ffmpeg({ source: ytdl(`http://www.youtube.com/watch?v=${id}`) })
         .format('flv')
-        // .noVideo() // TODO: Custom Video
         .audioCodec('libmp3lame')
         .videoCodec('copy')
         .inputOptions([
