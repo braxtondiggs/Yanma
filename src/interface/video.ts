@@ -1,4 +1,4 @@
-import { IIMVDBVideo } from './';
+import { IIMVDBArist, IIMVDBDirector } from './';
 
 export interface IVideo {
   publishedAt: string;
@@ -8,5 +8,10 @@ export interface IVideo {
   id: string;
   image: string;
   url: string;
-  artist?: IIMVDBVideo;
+  artists?: IIMVDBArist[];
+  featured_artists?: IIMVDBArist[];
+  directors?: IIMVDBDirector[];
+  imvdb_id?: number;
+  imvdb_title?: string;
+  release_date_string?: string;
 }

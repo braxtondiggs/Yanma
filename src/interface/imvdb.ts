@@ -13,7 +13,9 @@ export interface IIMVDBVideo {
   verified_credits: false;
   artists: IIMVDBArist[];
   image: IIMVDBImages;
+  sources?: IIMVDBSources[];
   directors?: IIMVDBDirector[];
+  featured_artists?: IIMVDBArist[];
   release_date_stamp: number;
   release_date_string: string;
 }
@@ -38,6 +40,13 @@ export interface IIMVDBImages {
   b?: string;
   t?: string;
   s?: string;
+}
+
+export interface IIMVDBSources {
+  source: string;
+  source_slug: string;
+  source_data: string;
+  is_primary: boolean;
 }
 
 export interface IIMVDBDirector {

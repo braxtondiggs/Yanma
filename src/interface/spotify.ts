@@ -1,4 +1,3 @@
-
 export interface ISpotify {
   artists: {
     href: string,
@@ -9,6 +8,10 @@ export interface ISpotify {
     previous: string,
     total: number
   };
+}
+
+export interface ISpotifyRelated {
+  artists: ISpotifyArtist[];
 }
 
 export interface ISpotifyArtist {

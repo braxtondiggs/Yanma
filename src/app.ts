@@ -34,7 +34,7 @@ class App {
         }
       }, (err: any) => {
         if (err) console.log(err);
-        console.log('all done');
+        this.videos.addVideo().then(() => this.startVideoService());
       });
   }
 }
