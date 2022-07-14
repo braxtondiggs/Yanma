@@ -1,5 +1,10 @@
 {
-	"cSpell.words": [
-		"nestjs"
-	]
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "cSpell.words": ["Fastify", "nestjs", "soundcloud"],
+  "prettier.printWidth": 200,
+  "yaml.format.printWidth": 200,
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }
