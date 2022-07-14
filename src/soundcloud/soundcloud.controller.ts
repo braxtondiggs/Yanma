@@ -5,8 +5,13 @@ import { SoundCloudService } from './soundcloud.service';
 export class SoundCloudController {
   constructor(private readonly soundcloud: SoundCloudService) {}
 
-  @Get()
-  index() {
+  @Get('download')
+  download() {
     return this.soundcloud.download('https://soundcloud.com/isvvcisvvcisvvc/droppin-bustaz');
+  }
+
+  @Get('search')
+  search() {
+    return this.soundcloud.search('nipsey hussle');
   }
 }
