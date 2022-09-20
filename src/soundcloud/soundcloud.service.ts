@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import scdl from 'soundcloud-downloader';
-import { createWriteStream, writeFileSync } from 'fs';
+import { createWriteStream } from 'fs';
 
 @Injectable()
 export class SoundCloudService {
