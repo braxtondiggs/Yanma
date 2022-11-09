@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Screen Recorder</title>
+  <style type="text/css">
+    html,body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      background: white;
+    }
+
+    video,
+    iframe {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  </style>
+
+<body>
+  <!--Hello Mom!
+  <video id="video" autoplay loop>
+    <source src="http://127.0.0.1:8080/Juicy J - 30 Inches.mp4" type="video/mp4">
+  </video>-->
+  <iframe src="https://www.youtube.com/embed/u9j8t7d-Gv4?autoplay=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  <script src="https://cdn.socket.io/4.3.2/socket.io.min.js" integrity="sha384-KAZ4DtjNhLChOB/hxXuKqhMLYvx3b5MlT55xPEiNmREKRzeEm+RVPlTnAn0ajQNs" crossorigin="anonymous"></script>
+  <script type="text/javascript">
+    /*(async () => {
+      const video = document.getElementById('video');
+      try {
+        const promise = video.play() || Promise.reject('');
+        await promise;
+      } catch (error) {
+        video.muted = true;
+        video.play();
+      }
+
+      const socket = io('http://localhost:3000');
+
+      socket.on('connect', async () => {
+        console.log('Connected');
+
+        const stream = await navigator.mediaDevices.getDisplayMedia({
+          video: true,
+          audio: true
+        });
+
+        if (stream) {
+          const mediaStream = new MediaStream();
+          const video = stream.getVideoTracks()[0];
+          const audio = stream.getAudioTracks()[0];
+          console.log("Video trac ", video);
+          console.log("audio trac ", stream.getAudioTracks());
+          mediaStream.addTrack(video);
+          mediaStream.addTrack(audio);
+
+          const recorder = new MediaRecorder(mediaStream, {
+            mimeType: "video/webm;codecs=h264",
+            videoBitsPerSecond: 3 * 1024 * 1024,
+          });
+          recorder.ondataavailable = ({ data }) => {
+            console.log('emit', data)
+            socket.emit('stream', data);
+          };
+          recorder.start(1000);
+        }
+      });
+
+      socket.on('disconnect', () => {
+        console.log('Disconnected');
+      });
+
+    })();*/
+  </script>
+</body>
+</head>

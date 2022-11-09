@@ -1,4 +1,4 @@
-# Yanma ![Yanma](cryptonym.png)
+# Yanma ![Yanma](icon.png)
 
 Youtube Live Jukebox Prototype
 

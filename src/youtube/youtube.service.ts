@@ -5,118 +5,147 @@ import { spawn } from 'child_process';
 @Injectable()
 export class YoutubeService {
   async run() {
-    launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
-    }).then(async (browser) => {
-      const page = await browser.newPage();
-
-      await page.goto('https://www.youtube.com/watch?v=sHz8Zr8fj6I', { waitUntil: 'networkidle2' });
-
-      await this.stream({
-        page: page,
-        key: 'xxxx-xxxx-xxxx-xxxx',
-        fps: 30,
-        pipeOutput: true,
-        prepare: function (browser, page) {
-          console.log('Preparing...');
-        },
-        render: function (browser, page, frame) {
-          console.log('Rendering...');
-        }
-      });
-
-      await browser.close();
+    const width = 1920;
+    const height = 1080;
+    const browser = await launch({
+      headless: false,
+      defaultViewport: {
+        width,
+        height
+      },
+      args: [
+        '--enable-usermedia-screen-capturing',
+        '--allow-http-screen-capture',
+        '--no-sandbox',
+        '--auto-select-desktop-capture-source=Screen Recorder',
+        '--disable-setuid-sandbox',
+        '--disable-web-security',
+        '--use-gl=egl',
+        '--autoplay-policy=no-user-gesture-required',
+        `--window-size=${width},${height}`
+      ]
     });
-  }
+    const page = await browser.newPage();
 
-  private async stream(options) {
-    const browser = options.browser || (await launch());
-    const page = options.page || (await browser.newPage());
+    await page.goto('http://127.0.0.1:8080', { waitUntil: 'networkidle2' });
+    const context = browser.defaultBrowserContext();
+    context.clearPermissionOverrides();
 
-    await options.prepare(browser, page);
-
-    const ffmpegPath = options.ffmpeg || 'ffmpeg';
-    const fps = options.fps || 30;
-    const resolution = options.resolution || '1280x720';
-    const preset = options.preset || 'medium';
-    const rate = options.rate || '2500k';
-    const threads = options.threads || '2';
-
-    const outUrl = options.output || 'rtmp://a.rtmp.youtube.com/live2/';
-
-    const ffmpegArgs = (fps) => [
-      // IN
-      '-f',
-      'image2pipe',
-      '-use_wallclock_as_timestamps',
-      '1',
+    const ffmpeg = spawn('ffmpeg', [
       '-i',
       '-',
-      '-f',
-      'lavfi',
-      '-i',
-      'anullsrc',
-      // OUT
-      // '-filter:v bwdif=mode=send_field:parity=auto:deint=all',
-      '-s',
-      resolution,
-      '-vsync',
-      'cfr',
-      '-r',
-      fps,
-      '-g',
-      fps * 2,
-      '-vcodec',
+      // select first stream intended for output
+      '-map',
+      '0',
+      // video codec config: low latency, adaptive bitrate
+      '-c:v',
       'libx264',
-      '-x264opts',
-      'keyint=' + fps * 2 + ':no-scenecut',
       '-preset',
-      preset,
-      '-b:v',
-      rate,
-      '-minrate',
-      rate,
-      '-maxrate',
-      rate,
-      '-bufsize',
-      rate,
-      '-pix_fmt',
-      'yuv420p',
-      '-threads',
-      threads,
-      '-f',
-      'lavfi',
-      '-acodec',
-      'libmp3lame',
+      'veryfast',
+      '-tune',
+      'zerolatency',
+      '-g:v',
+      '60',
+
+      // audio codec config: sampling frequency (11025, 22050, 44100), bitrate 64 kbits
+      '-c:a',
+      'aac',
+      '-strict',
+      '-2',
       '-ar',
       '44100',
       '-b:a',
-      '128k',
+      '64k',
+
+      //force to overwrite
+      '-y',
+
+      // used for audio sync
+      '-use_wallclock_as_timestamps',
+      '1',
+      '-async',
+      '1',
+
+      '-flags',
+      '+global_header',
       '-f',
-      'flv'
-    ];
+      'tee',
+      `[f=flv:onfail=ignore]rtmp://a.rtmp.youtube.com/live2/${process.env.YOUTUBE_STREAM_KEY}`
+    ]);
 
-    const args = ffmpegArgs(fps);
+    ffmpeg.on('close', (code, signal) => {
+      console.log('FFmpeg child process closed, code ' + code + ', signal ' + signal);
+    });
 
-    const fullUrl = outUrl + options.key;
-    args.push(fullUrl);
+    ffmpeg.stdin.on('error', (e) => {
+      console.log('FFmpeg STDIN Error', e);
+    });
 
-    const ffmpeg = spawn(ffmpegPath, args);
+    ffmpeg.stderr.on('data', (data) => {
+      console.log('FFmpeg STDERR:', data.toString());
+    });
 
-    let screenshot = null;
-
-    if (options.pipeOutput) {
-      ffmpeg.stdout.pipe(process.stdout);
-      ffmpeg.stderr.pipe(process.stderr);
+    function str2ab(str) {
+      const buf = new ArrayBuffer(str.length);
+      const bufView = new Uint8Array(buf);
+      for (let i = 0, strLen = str.length; i < strLen; i++) {
+        bufView[i] = str.charCodeAt(i);
+      }
+      return buf;
     }
 
-    while (true) {
-      await options.render(browser, page);
+    await page.exposeFunction('storeChunk', function (chunk) {
+      const data = Buffer.from(str2ab(chunk));
+      ffmpeg.stdin.write(data);
+    });
 
-      screenshot = await page.screenshot({ type: 'jpeg' });
+    page.evaluate(async () => {
+      const stream = await navigator.mediaDevices.getDisplayMedia({
+        video: true,
+        audio: true
+      });
+      function arrayBufferToString(buffer) {
+        // Convert an ArrayBuffer to an UTF-8 String
 
-      ffmpeg.stdin.write(screenshot);
-    }
+        const bufView = new Uint8Array(buffer);
+        const length = bufView.length;
+        let result = '';
+        let addition = Math.pow(2, 8) - 1;
+
+        for (let i = 0; i < length; i += addition) {
+          if (i + addition > length) {
+            addition = length - i;
+          }
+          result += String.fromCharCode.apply(null, bufView.subarray(i, i + addition));
+        }
+        return result;
+      }
+
+      if (stream) {
+        const mediaStream = new MediaStream();
+        const video = stream.getVideoTracks()[0];
+        const audio = stream.getAudioTracks()[0];
+        mediaStream.addTrack(video);
+        mediaStream.addTrack(audio);
+
+        const recorder = new MediaRecorder(mediaStream, {
+          mimeType: 'video/webm;codecs=vp9',
+          videoBitsPerSecond: 3 * 1024 * 1024
+        });
+        recorder.ondataavailable = async ({ data }) => {
+          if (data.size === 0) return;
+          console.log('emit');
+          const buffer = await data.arrayBuffer();
+          window.storeChunk(arrayBufferToString(buffer));
+        };
+        recorder.start(1000);
+      }
+    });
+
+    await new Promise((r) => setTimeout(r, 50000));
+    ffmpeg.stdin.end();
+    ffmpeg.kill('SIGINT');
+    console.log('end');
+    await browser.close();
   }
 }
