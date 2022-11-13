@@ -5,8 +5,8 @@ import { spawn } from 'child_process';
 @Injectable()
 export class YoutubeService {
   async run() {
-    const width = 1920;
-    const height = 1080;
+    const width = 3840;
+    const height = 2160;
     const browser = await launch({
       headless: false,
       defaultViewport: {
@@ -129,8 +129,7 @@ export class YoutubeService {
         mediaStream.addTrack(audio);
 
         const recorder = new MediaRecorder(mediaStream, {
-          mimeType: 'video/webm;codecs=vp9',
-          videoBitsPerSecond: 3 * 1024 * 1024
+          mimeType: 'video/webm;codecs=vp9'
         });
         recorder.ondataavailable = async ({ data }) => {
           if (data.size === 0) return;
@@ -142,7 +141,7 @@ export class YoutubeService {
       }
     });
 
-    await new Promise((r) => setTimeout(r, 50000));
+    await new Promise((r) => setTimeout(r, 120000));
     ffmpeg.stdin.end();
     ffmpeg.kill('SIGINT');
     console.log('end');
